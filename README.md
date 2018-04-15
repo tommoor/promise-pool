@@ -1,4 +1,4 @@
-[![CircleCI](https://circleci.com/gh/tommoor/promise-pool.svg?style=svg)](https://circleci.com/gh/tommoor/promise-pool)
+[![npm version](https://badge.fury.io/js/async-promise-pool.svg)](https://badge.fury.io/js/async-promise-pool) [![CircleCI](https://circleci.com/gh/tommoor/promise-pool.svg?style=svg)](https://circleci.com/gh/tommoor/promise-pool) 
 
 # Promise Pool
 
