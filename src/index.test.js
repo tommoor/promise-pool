@@ -1,15 +1,11 @@
-import chai from "chai";
-import sinon from "sinon";
-import PromisePool from "./src";
-
-const expect = chai.expect;
+const PromisePool = require(".");
 
 describe("PromisePool", () => {
   let promiseSpy;
   let promiseProducer;
 
   beforeEach(() => {
-    promiseSpy = sinon.spy();
+    promiseSpy = jest.fn();
     promiseProducer = () =>
       new Promise((resolve, reject) => {
         promiseSpy();
@@ -22,8 +18,8 @@ describe("PromisePool", () => {
     pool.add(promiseProducer);
     pool.add(promiseProducer);
     const results = await pool.all();
-    expect(promiseSpy.callCount).to.equal(2);
-    expect(results.length).to.equal(2);
+    expect(promiseSpy).toHaveBeenCalledTimes(2);
+    expect(results.length).toBe(2);
   });
 
   it("should await all promises with no concurrency", async () => {
@@ -32,8 +28,8 @@ describe("PromisePool", () => {
     pool.add(promiseProducer);
     pool.add(promiseProducer);
     const results = await pool.all();
-    expect(promiseSpy.callCount).to.equal(3);
-    expect(results.length).to.equal(3);
+    expect(promiseSpy).toHaveBeenCalledTimes(3);
+    expect(results.length).toBe(3);
   });
 
   it("should allow multiple concurrency", async () => {
@@ -41,8 +37,8 @@ describe("PromisePool", () => {
     pool.add(promiseProducer);
     pool.add(promiseProducer);
     const results = await pool.all();
-    expect(promiseSpy.callCount).to.equal(2);
-    expect(results.length).to.equal(2);
+    expect(promiseSpy).toHaveBeenCalledTimes(2);
+    expect(results.length).toBe(2);
   });
 
   it("can be called multiple times", async () => {
@@ -52,8 +48,8 @@ describe("PromisePool", () => {
     pool.add(promiseProducer);
     pool.add(promiseProducer);
     const results = await pool.all();
-    expect(promiseSpy.callCount).to.equal(3);
-    expect(results.length).to.equal(3);
+    expect(promiseSpy).toHaveBeenCalledTimes(3);
+    expect(results.length).toBe(3);
   });
 
   it("should throw if .all fails", async () => {
@@ -72,7 +68,7 @@ describe("PromisePool", () => {
     } catch (err) {
       error = err.message;
     }
-    expect(error).to.equal("Test");
+    expect(error).toBe("Test");
   });
 
   it("should throw if any promise fails outside of .all", async () => {
@@ -91,6 +87,6 @@ describe("PromisePool", () => {
     } catch (err) {
       error = err.message;
     }
-    expect(error).to.equal("Test");
+    expect(error).toBe("Test");
   });
 });

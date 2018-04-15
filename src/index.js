@@ -1,5 +1,4 @@
 // @flow
-import without from "lodash/without";
 
 type PromiseProducer = () => Promise<*>;
 type Deferred = {
@@ -24,7 +23,7 @@ function defer() {
   };
 }
 
-export default class PromisePool {
+class PromisePool {
   queue: PromiseProducer[] = [];
   pool: Promise<*>[] = [];
   results: *[] = [];
@@ -73,7 +72,7 @@ export default class PromisePool {
       }
 
       this.results.push(result);
-      this.pool = without(this.pool, promise);
+      this.pool = this.pool.filter(p => p !== promise);
 
       // every time a promise in the queue is resolved then we need to check if
       // there is anything waiting to be started.
@@ -98,3 +97,5 @@ export default class PromisePool {
     return this.next();
   }
 }
+
+module.exports = PromisePool;
