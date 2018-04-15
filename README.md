@@ -2,8 +2,14 @@
 
 # Promise Pool
 
+Promise pool is a small, dependency free, library to manage the
+concurrent resolution of any number of promises. It is particularly useful
+when the promises are not all available upfront.
+
 ## Example Usage
 ```javascript
+const PromisePool = require("async-promise-pool");
+
 // concurrency is the only option for PromisePool and enables you to 
 // choose how many promises will run at once
 const pool = new PromisePool({ concurrency: 3 });
