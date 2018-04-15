@@ -1,0 +1,16 @@
+{
+  "name": "promise-pool",
+  "version": "1.0.0",
+  "description": "Promise pool",
+  "main": "index.js",
+  "scripts": {
+    "build": "babel src -d lib",
+    "prepublish": "yarn run build"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-flow": "^6.23.0",
+    "flow-bin": "^0.69.0"
+  }
+}
