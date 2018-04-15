@@ -4,7 +4,7 @@
 
 ## Example Usage
 ```javascript
-// concurrency is te only option for PromisePool and enables you to 
+// concurrency is the only option for PromisePool and enables you to 
 // choose how many promises will run at once
 const pool = new PromisePool({ concurrency: 3 });
 
