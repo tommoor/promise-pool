@@ -9,7 +9,7 @@ describe("PromisePool", () => {
     promiseProducer = () =>
       new Promise((resolve, reject) => {
         promiseSpy();
-        resolve();
+        resolve("success");
       });
   });
 
@@ -33,12 +33,23 @@ describe("PromisePool", () => {
   });
 
   it("should allow multiple concurrency", async () => {
+    const delayedPromiseSpy = jest.fn();
+    const delayedPromiseProducer = () =>
+      new Promise((resolve, reject) => {
+        setTimeout(() => {
+          delayedPromiseSpy();
+          resolve("delayed");
+        }, 1000);
+      });
+
     const pool = new PromisePool({ concurrency: 2 });
-    pool.add(promiseProducer);
+    pool.add(delayedPromiseProducer);
     pool.add(promiseProducer);
     const results = await pool.all();
-    expect(promiseSpy).toHaveBeenCalledTimes(2);
-    expect(results.length).toBe(2);
+    expect(delayedPromiseSpy).toBeCalled();
+    expect(promiseSpy).toBeCalled();
+    expect(results[0]).toBe("success");
+    expect(results[1]).toBe("delayed");
   });
 
   it("can be called multiple times", async () => {

@@ -27,7 +27,7 @@ class PromisePool {
   queue: PromiseProducer[] = [];
   pool: Promise<*>[] = [];
   results: *[] = [];
-  wait: ?Deferred;
+  final: Deferred;
   error: ?Error;
   concurrency: number = Number.MAX_VALUE;
 
@@ -35,6 +35,7 @@ class PromisePool {
     if (options.concurrency) {
       this.concurrency = options.concurrency;
     }
+    this.final = defer();
   }
 
   next = async () => {
@@ -42,49 +43,34 @@ class PromisePool {
     // this ensures that if anything failed while being added to the pool then
     // calling pool.all will always result in an error being thrown
     if (this.error) {
-      throw this.error;
+      return this.final.reject(this.error);
     }
 
     // There's nothing left to do if the queue and pool are both empty, we can
     // return the promise results now.
     if (!this.queue.length && !this.pool.length) {
-      return this.results;
+      return this.final.resolve(this.results);
     }
 
-    // The number of promises running is enough or there are no more promises
-    // left to queue up then wait. This avoids a hot-loop.
-    if (this.pool.length >= this.concurrency || !this.queue.length) {
-      if (!this.wait) this.wait = defer();
-      await this.wait.promise;
-      return this.next();
-    }
+    // The number of promises running is enough or there are no more promises left to queue up then wait.
+    if (this.pool.length >= this.concurrency || !this.queue.length) return;
 
     // At this point we have a new promise to run and the concurrency to run it
     const promiseProducer = this.queue.shift();
-    const run = async () => {
-      const promise = promiseProducer();
+
+    let result;
+    let promise;
+    try {
+      promise = promiseProducer();
       this.pool.push(promise);
-      let result;
-      try {
-        result = await promise;
-      } catch (err) {
-        this.error = err;
-      }
+      result = await promise;
 
       this.results.push(result);
-      this.pool = this.pool.filter(p => p !== promise);
+       this.pool = this.pool.filter(p => p !== promise);
+    } catch (err) {
+      this.error = err;
+    }
 
-      // every time a promise in the queue is resolved then we need to check if
-      // there is anything waiting to be started.
-      if (this.wait) {
-        const wait = this.wait;
-        this.wait = undefined;
-        return wait.resolve();
-      }
-    };
-
-    // run is not awaited otherwise concurrency would never be more than one
-    run();
     return this.next();
   };
 
@@ -94,7 +80,7 @@ class PromisePool {
   }
 
   all() {
-    return this.next();
+    return this.final.promise;
   }
 }
 
