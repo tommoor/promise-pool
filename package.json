@@ -1,6 +1,6 @@
 {
   "name": "async-promise-pool",
-  "version": "1.0.0",
+  "version": "1.0.1-0",
   "description": "A flexible pool of promises that can be awaited and executed at a chosen level of concurrency",
   "main": "index.js",
   "scripts": {
