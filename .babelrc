@@ -1,4 +1,4 @@
 {
   "presets": ["flow", "env"],
-  "plugins": ["transform-class-properties"]
+  "plugins": ["transform-class-properties", "transform-runtime"]
 }
