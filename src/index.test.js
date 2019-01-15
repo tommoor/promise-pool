@@ -52,6 +52,33 @@ describe("PromisePool", () => {
     expect(results[1]).toBe("delayed");
   });
 
+  it("should respect concurrency", async () => {
+    const delayedPromiseSpy = jest.fn();
+    const kindaDelayedPromiseProducer = () =>
+      new Promise((resolve, reject) => {
+        setTimeout(() => {
+          delayedPromiseSpy();
+          resolve("delayed2");
+        }, 500);
+      });
+    const delayedPromiseProducer = () =>
+      new Promise((resolve, reject) => {
+        setTimeout(() => {
+          delayedPromiseSpy();
+          resolve("delayed");
+        }, 1000);
+      });
+
+    const pool = new PromisePool({ concurrency: 2 });
+    pool.add(delayedPromiseProducer);
+    pool.add(kindaDelayedPromiseProducer);
+    pool.add(promiseProducer);
+    const results = await pool.all();
+    expect(results[0]).toBe("delayed2");
+    expect(results[1]).toBe("success");
+    expect(results[2]).toBe("delayed");
+  });
+
   it("can be called multiple times", async () => {
     const pool = new PromisePool({ concurrency: 2 });
     pool.add(promiseProducer);
