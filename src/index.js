@@ -80,6 +80,7 @@ class PromisePool {
   }
 
   all() {
+    if (!this.pool.length && !this.queue.length) return [];
     return this.final.promise;
   }
 }

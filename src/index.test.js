@@ -127,4 +127,10 @@ describe("PromisePool", () => {
     }
     expect(error).toBe("Test");
   });
+
+  it("should resolve if pool is empty", async () => {
+    const pool = new PromisePool({ concurrency: 2 });
+    const results = await pool.all();
+    expect(results.length).toBe(0);
+  });
 });
