@@ -19,5 +19,8 @@
     "flow-bin": "^0.69.0",
     "jest": "^22.4.3",
     "regenerator-runtime": "^0.11.1"
+  },
+  "dependencies": {
+    "babel-runtime": "^6.26.0"
   }
 }
