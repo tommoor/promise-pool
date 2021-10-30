@@ -3,8 +3,9 @@
   "version": "1.0.4",
   "description": "A flexible pool of promises that can be awaited and executed at a chosen level of concurrency",
   "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
-    "build": "babel src -d lib",
+    "build": "babel src -d lib && cp src/index.d.ts lib/index.d.ts",
     "prepublish": "yarn run build",
     "test": "jest"
   },
