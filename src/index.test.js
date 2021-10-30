@@ -90,6 +90,14 @@ describe("PromisePool", () => {
     expect(results.length).toBe(3);
   });
 
+  it("should return promise from .add() if accessIndividualPromises is true", async () => {
+    const pool = new PromisePool({ accessIndividualPromises: true });
+    const result1 = await pool.add(promiseProducer);
+    const result2 = await pool.add(promiseProducer);
+    expect(result1).toBe("success");
+    expect(result2).toBe("success");
+  })
+
   it("should throw if .all fails", async () => {
     const pool = new PromisePool({ concurrency: 2 });
     let error;

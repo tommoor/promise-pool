@@ -6,7 +6,10 @@ type Deferred = {
   reject: Function,
   promise: Promise<*>
 };
-type Options = { concurrency?: number };
+type Options = {
+  concurrency?: number,
+  accessIndividualPromises?: boolean
+};
 
 // see: http://bluebirdjs.com/docs/api/deferred-migration.html
 function defer() {
@@ -30,11 +33,13 @@ class PromisePool {
   final: Deferred;
   error: ?Error;
   concurrency: number = Number.MAX_VALUE;
+  accessIndividualPromises: boolean;
 
   constructor(options: Options = {}) {
     if (options.concurrency) {
       this.concurrency = options.concurrency;
     }
+    this.accessIndividualPromises = options.accessIndividualPromises;
     this.final = defer();
   }
 
@@ -75,8 +80,19 @@ class PromisePool {
   };
 
   add(promiseProducer: PromiseProducer) {
-    this.queue.push(promiseProducer);
-    this.next();
+    if (!this.accessIndividualPromises) {
+      this.queue.push(promiseProducer);
+      this.next()
+    } else {
+      return new Promise((res, rej) => {
+        this.queue.push(() => {
+          const promise = promiseProducer();
+          promise.then(res, rej);
+          return promise;
+        });
+        this.next();
+      });
+    }
   }
 
   all() {
